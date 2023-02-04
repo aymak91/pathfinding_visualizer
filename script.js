@@ -120,7 +120,7 @@ async function solveMaze() {
         if (node === 0) break;
 
         try {
-            await delay(300)
+            await delay(50)
             document.getElementById('node'+(node+1)).style.backgroundColor = PATH;
         } catch(err) {
             break
