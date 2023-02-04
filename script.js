@@ -46,7 +46,6 @@ function reset() {
 function resetPath() {
     for (let i=2; i<100; i++) {
         let node = document.getElementById('node' + i);
-        console.log(node.style.backgroundColor)
         if (node.style.backgroundColor === PATH) node.style.backgroundColor = ORIGINAL;
     }
 }
@@ -113,14 +112,11 @@ async function solveMaze() {
         return;
     }
 
-    // document.getElementById('node100').style.backgroundColor = PATH;
-
     let previous = 99;
 
     while (true) {
         
         let node = prev[previous];
-        console.log(node)
         if (node === 0) break;
 
         try {
@@ -133,7 +129,6 @@ async function solveMaze() {
         
         previous = node;
     }
-    // document.getElementById('node1').style.backgroundColor = PATH
 }
 
 function inBounds(grid, row, col) {
@@ -147,9 +142,3 @@ function delay(time) {
       setTimeout(res,time)
     })
 }
-// let sayNameAfterDelay = async (firstName, lastName) => {
-//     await delay(1000);
-//     console.log(firstName);
-//     await delay(1000);
-//     console.log(lastName);
-//   }
