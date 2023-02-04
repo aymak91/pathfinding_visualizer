@@ -1,16 +1,18 @@
-let WALL = 'rgb(255, 255, 255)';
-let ORIGINAL = 'rgb(52, 52, 52)';
+const LEN = 10;
+const WALL = 'rgb(255, 255, 255)';
+const ORIGINAL = 'rgb(52, 52, 52)';
+const PATH = "rgb(252, 227, 3)";
 
 function setup() {
     let maze_container = document.getElementById('maze_container');
 
-    for (let i=0; i<10; i++) {
+    for (let i=0; i<LEN; i++) {
         let row = document.createElement('div');
         row.className = 'row row' + (i+1);
         row.id = 'row' + (i+1);
-         for (let j=0; j<10; j++) {
+         for (let j=0; j<LEN; j++) {
             let node = document.createElement('div');
-            let nodeNum = ((i*10)+(j+1))
+            let nodeNum = ((i*LEN)+(j+1))
             node.className = 'node node' + nodeNum;
             node.id = 'node' + nodeNum;
 
@@ -40,3 +42,115 @@ function reset() {
         node.style.backgroundColor = ORIGINAL;
     }
 }
+
+function resetPath() {
+    for (let i=2; i<100; i++) {
+        let node = document.getElementById('node' + i);
+        console.log(node.style.backgroundColor)
+        if (node.style.backgroundColor === PATH) node.style.backgroundColor = ORIGINAL;
+    }
+}
+
+async function solveMaze() {
+    resetPath();
+    
+    let maze = [];
+
+    for (let i=0; i<LEN; i++) {
+        maze[i] = new Array(LEN).fill(0);
+
+    }
+
+    let nodeVal = 1;
+
+    for (let row=0; row<LEN; row++) {
+        for (let col=0; col<LEN; col++) {
+            const cell = document.getElementById('node' + nodeVal).style.backgroundColor;
+            maze[row][col] = cell === WALL ? -1 : nodeVal;
+            nodeVal++;
+        }
+    }
+
+    const directions = [[1,0], [0,1], [-1,0], [0,-1]];
+    
+    const visited = [];
+    const prev = new Array(LEN*LEN).fill(0);
+
+    for (let i=0; i<LEN; i++) {
+        visited[i] = new Array(LEN).fill(false);
+    }
+    
+    const queue = [[0,0]];
+
+    let solved = false;
+
+    while (queue.length > 0) {
+        const [row, col] = queue.shift();
+        const node = maze[row][col];
+
+        visited[row][col] = true;
+
+        if (node === 100) {
+            solved = true;
+            break;
+        }
+
+        for (let i=0; i<directions.length; i++) {
+            const nRow = directions[i][0] + row;
+            const nCol = directions[i][1] + col;
+
+            if (inBounds(maze, nRow, nCol) && maze[nRow][nCol] != -1 && !visited[nRow][nCol]) {
+                queue.push([nRow, nCol]);
+                visited[nRow][nCol] = true
+                prev[maze[nRow][nCol]-1] = node-1;
+            }
+        }
+
+    }
+
+    if (!solved) {
+        alert("This maze is impossible. I'll reset it for you!");
+        reset();
+        return;
+    }
+
+    // document.getElementById('node100').style.backgroundColor = PATH;
+
+    let previous = 99;
+
+    while (true) {
+        
+        let node = prev[previous];
+        console.log(node)
+        if (node === 0) break;
+
+        try {
+            await delay(300)
+            document.getElementById('node'+(node+1)).style.backgroundColor = PATH;
+        } catch(err) {
+            break
+        }
+
+        
+        previous = node;
+    }
+    // document.getElementById('node1').style.backgroundColor = PATH
+}
+
+function inBounds(grid, row, col) {
+    const rowInBound = row >= 0 && row < grid.length;
+    const colInBound = col >= 0 && col < grid[0].length;
+    return rowInBound && colInBound;
+}
+
+function delay(time) {
+    return new Promise(res => {
+      setTimeout(res,time)
+    })
+}
+// let sayNameAfterDelay = async (firstName, lastName) => {
+//     await delay(1000);
+//     console.log(firstName);
+//     await delay(1000);
+//     console.log(lastName);
+//   }
