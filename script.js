@@ -53,7 +53,7 @@ function resetPath() {
 
 async function solveMaze() {
     resetPath();
-    
+
     let maze = [];
 
     for (let i=0; i<LEN; i++) {
@@ -109,8 +109,7 @@ async function solveMaze() {
     }
 
     if (!solved) {
-        alert("This maze is impossible. I'll reset it for you!");
-        reset();
+        alert("There is no solution!");
         return;
     }
 
